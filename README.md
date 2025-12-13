@@ -1,0 +1,1 @@
+# skypay-technical-test
