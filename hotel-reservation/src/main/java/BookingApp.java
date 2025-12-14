@@ -1,6 +1,11 @@
 import enums.RoomType;
 import exception.BusinessException;
 import service.BookingServiceImpl;
+import service.RoomServiceImpl;
+import service.UserServiceImpl;
+import service.interfaces.BookingService;
+import service.interfaces.RoomService;
+import service.interfaces.UserService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,14 +15,16 @@ import static helper.TestHelper.runTest;
 
 public class BookingApp {
     public static void main(String[] args) throws ParseException {
-        BookingServiceImpl bookingService = new BookingServiceImpl();
+        RoomService roomService = new RoomServiceImpl();
+        UserService userService = new UserServiceImpl();
+        BookingService bookingService = new BookingServiceImpl(roomService, userService);
 
-        bookingService.setRoom(1, RoomType.STANDARD, 1000);
-        bookingService.setRoom(2, RoomType.JUNIOR, 2000);
-        bookingService.setRoom(3, RoomType.MASTER, 3000);
+        roomService.setRoom(1, RoomType.STANDARD, 1000);
+        roomService.setRoom(2, RoomType.JUNIOR, 2000);
+        roomService.setRoom(3, RoomType.MASTER, 3000);
 
-        bookingService.setUser(1, 5000);
-        bookingService.setUser(2, 10000);
+        userService.setUser(1, 5000);
+        userService.setUser(2, 10000);
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -47,10 +54,10 @@ public class BookingApp {
         );
 
         runTest("Add Room 1 again", () ->
-                bookingService.setRoom(1, RoomType.MASTER, 10000)
+                roomService.setRoom(1, RoomType.MASTER, 10000)
         );
 
         bookingService.printAll();
-        bookingService.printAllUsers();
+        userService.printAllUsers();
     }
 }

@@ -5,29 +5,26 @@ import entity.Room;
 import entity.User;
 import enums.RoomType;
 import exception.BusinessException;
+import service.interfaces.BookingService;
+import service.interfaces.RoomService;
+import service.interfaces.UserService;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
-    private List<Room> roomList = new ArrayList<>();
-    private List<User> userList = new ArrayList<>();
     private List<Booking> bookingList = new ArrayList<>();
+    private RoomServiceImpl roomService;
+    private UserServiceImpl userService;
 
-    @Override
-    public void setRoom(int roomNumber, RoomType roomType, int roomPricePerNight) {
-        for (Room r : roomList) {
-            if (r.getRoomNumber() == roomNumber) {
-                throw new BusinessException("This room number is already added!");
-            }
-        }
-        roomList.add(new Room(roomNumber, roomType, roomPricePerNight));
+    public BookingServiceImpl(RoomService roomService, UserService userService){
+        this.roomService = (RoomServiceImpl) roomService;
+        this.userService = (UserServiceImpl) userService;
     }
 
     @Override
@@ -61,12 +58,12 @@ public class BookingServiceImpl implements BookingService {
         User user = null;
         Room room = null;
 
-        for (User u : userList) {
+        for (User u : userService.getUserList()) {
             if (u.getId() == userId) {
                 user = u;
             }
         }
-        for (Room r : roomList) {
+        for (Room r : roomService.getRoomList()) {
             if (r.getRoomNumber() == roomNumber) {
                 room = r;
             }
@@ -90,18 +87,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void printAll() {
-        System.out.println("Rooms ========================");
-        if (!roomList.isEmpty()) {
-            for (int i = roomList.size() - 1; i >= 0; i--) {
-                Room r = roomList.get(i);
-                System.out.println("Room Number: " + r.getRoomNumber());
-                System.out.println("Room Type: " + r.getRoomType());
-                System.out.println("Room price Per Night: " + r.getPricePerNight());
-                System.out.println("===============================");
-            }
-        } else {
-            System.out.println("No Room Found!");
-        }
+        roomService.printRooms();
 
         System.out.println("Bookings =====================");
         if (!bookingList.isEmpty()) {
@@ -124,27 +110,4 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    @Override
-    public void setUser(int userId, int balance) {
-        for (User u : userList) {
-            if (u.getId() == userId) {
-                throw new BusinessException("User id already exist!");
-            }
-        }
-        userList.add(new User(userId, balance));
-    }
-
-    @Override
-    public void printAllUsers() {
-        System.out.println("Users ===================");
-        if (!userList.isEmpty()) {
-            for (int i = userList.size() - 1; i >= 0; i--) {
-                User u = userList.get(i);
-                System.out.println("ID: " +u.getId());
-                System.out.println("Balance: " +u.getBalance());
-            }
-        }else{
-            System.out.println("No User for this time!");
-        }
-    }
 }
